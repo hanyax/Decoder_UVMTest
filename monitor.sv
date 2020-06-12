@@ -31,13 +31,10 @@ class monitor extends uvm_monitor;
     // This task monitors the interface for a complete
     // transaction and writes into analysis port when complete
 
-
-      while (!vif.writealldone)  begin
-        `uvm_info("DRV", "Wait until done is high", UVM_LOW)
-        @(posedge vif.clk);
-      end
-
-    //reg_item item = new; weird
+    while (!vif.done)  begin
+      `uvm_info("DRV", "Wait until done is high", UVM_LOW)
+      @(posedge vif.clk);
+    end
 
     for(int n=0; n<str2.len+1; n++) begin
       @(posedge vif.clk);
@@ -48,24 +45,5 @@ class monitor extends uvm_monitor;
 
     mon_analysis_port.write(item);
 
-    //forever begin
-
-      /*
-      @(posedge vif.clk);
-      item.rdata = vif.rdata;
-
-      @ (posedge vif.clk);
-      reg_item item = new;
-      item.raddr = vif.raddr;
-      item.waddr = vif.waddr;
-      item.wr_en = vif.wr_en;
-      item.wdata = vif.wdata;
-
-
-      `uvm_info(get_type_name(), $sformatf("Monitor found packet %s", item.convert2str()), UVM_LOW)
-      mon_analysis_port.write(item);
-      */
-
-    //end
   endtask
 endclass
