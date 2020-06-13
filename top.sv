@@ -22,7 +22,6 @@ interface reg_if (input bit clk);
   logic [7:0] rdata;
   logic [7:0] wdata;
   logic done;
-  logic writealldone;
 
 endinterface
 

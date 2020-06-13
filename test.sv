@@ -20,20 +20,9 @@ class test extends uvm_test;
   virtual task run_phase(uvm_phase phase);
     gen_item_seq seq = gen_item_seq::type_id::create("seq");
     phase.raise_objection(this);
-    //apply_reset();
-
-    //seq.randomize() with {num inside {[20:30]}; };
     seq.start(e0.a0.s0);
-    #200;
+    #5000;
     phase.drop_objection(this);
   endtask
 
-  /*
-  virtual task apply_reset();
-    vif.rstn <= 0;
-    repeat(5) @ (posedge vif.clk);
-    vif.rstn <= 1;
-    repeat(10) @ (posedge vif.clk);
-  endtask
-  */
 endclass

@@ -27,27 +27,18 @@ class generator;
   function void encrypt;
     LFSR_init = 6'h01;                     // for program 2 run
     if(!LFSR_init) begin
-      //$display("illegal zero LFSR start pattern chosen, overriding with 6'h01");
       LFSR_init = 6'h01;                   // override 0 with a legal (nonzero) value
     end
     else
-      //$display("LFSR starting pattern = %b",LFSR_init);
-    //$display("original message string length = %d",str_len);
     for(lk = 0; lk<str_len; lk++)
       if(str2[lk]==8'h5f) continue;        // count leading _ chars in string
     else break;                          // we shall add these to preamble pad length
-    //$display("embedded leading underscore count = %d",lk);
-    // precompute encrypted message
+
     lfsr_ptrn = LFSR_ptrn[pat_sel];        // select one of the 6 permitted tap ptrns
     // write the three control settings into data_memory of DUT
 
     lfsr2[0]     = LFSR_init;              // any nonzero value (zero may be helpful for debug)
-    /*
-    $display("run encryption of this original message: ");
-    $display("%s",str2)        ;           // print original message in transcript window
-    $display();
-    $display("LFSR_ptrn = %h, LFSR_init = %h %h",lfsr_ptrn,LFSR_init,lfsr2[0]);
-    */
+
 
     for(int j=0; j<64; j++)       // pre-fill message_padded with ASCII _ characters
       msg_padded2[j] = 8'h5f;
@@ -55,8 +46,8 @@ class generator;
     msg_padded2[pre_length+l] = byte'(str2[l]);
     // compute the LFSR sequence
     for (int ii=0;ii<63;ii++) begin :lfsr_loop
-      lfsr2[ii+1] = (lfsr2[ii]<<1)+(^(lfsr2[ii]&lfsr_ptrn));//{LFSR[6:0],(^LFSR[5:3]^LFSR[7])};     // roll the rolling code
-    //      $display("lfsr_ptrn %d = %h",ii,lfsr2[ii]);
+      lfsr2[ii+1] = (lfsr2[ii]<<1)+(^(lfsr2[ii]&lfsr_ptrn));//{LFSR[6:0],(^LFSR[5:3]^LFSR[7])};     	// roll the rolling code
+
     end   :lfsr_loop
     // encrypt the message
     for (int i=0; i<64; i++) begin     // testbench will change on falling clocks

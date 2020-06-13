@@ -6,12 +6,12 @@
 class monitor extends uvm_monitor;
   `uvm_component_utils(monitor)
   //int str_len;
-  reg_item item;
-  string str2 = "Mr_Watson_come_here_I_want_to_see_you"; //extra defi
+  //reg_item item;
+  string str2 = "This_is_a_test"; //extra defi
   function new(string name="monitor",uvm_component parent=null);
     super.new(name, parent);
     //str_len = slen;
-    item = new;
+    //item = new;
   endfunction
 
   uvm_analysis_port  #(reg_item) mon_analysis_port;
@@ -30,20 +30,21 @@ class monitor extends uvm_monitor;
     super.run_phase(phase);
     // This task monitors the interface for a complete
     // transaction and writes into analysis port when complete
+    forever begin
+      if (!vif.done )  begin
+        @(posedge vif.clk);
+      end else begin
+        reg_item item = new;
+        for(int n=0; n<str2.len+1; n++) begin
+          @(posedge vif.clk);
+          vif.raddr          <= n;
+          @(posedge vif.clk);
+          item.msg_decryp2[n] = vif.rdata;
 
-    while (!vif.done)  begin
-      `uvm_info("DRV", "Wait until done is high", UVM_LOW)
-      @(posedge vif.clk);
+        end
+        mon_analysis_port.write(item);
+      end
     end
-
-    for(int n=0; n<str2.len+1; n++) begin
-      @(posedge vif.clk);
-      vif.raddr          <= n;
-      @(posedge vif.clk);
-      item.msg_decryp2[n] <= vif.rdata;
-    end
-
-    mon_analysis_port.write(item);
 
   endtask
 endclass

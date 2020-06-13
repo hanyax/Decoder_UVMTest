@@ -16,24 +16,31 @@ class driver extends uvm_driver #(reg_item);
   endfunction
 
   virtual task run_phase(uvm_phase phase);
+
     super.run_phase(phase);
-    vif.init <= 'b1;
-    vif.wr_en <= 'b1;
-    forever begin //writing all nums of 64byte message :maybe need a counter?
+    vif.init = 'b1;
+    vif.wr_en = 'b1;
+    repeat(5) @(posedge vif.clk);
+
+    for (int i = 0; i < 64; i++) begin
       reg_item m_item;
-      `uvm_info("DRV", $sformatf("Wait for item from sequencer"), UVM_LOW)
       seq_item_port.get_next_item(m_item);
       drive_item(m_item);
       seq_item_port.item_done();
     end
+
+    @ (posedge vif.clk);
     vif.wr_en <= 'b0;
+    @ (posedge vif.clk);
     vif.init <= 'b0;
+
   endtask
 
   virtual task drive_item(reg_item m_item);
+    @ (posedge vif.clk);
     vif.waddr <= m_item.waddr;
     vif.wdata <= m_item.wdata;
-    @ (posedge vif.clk);
+
 
   endtask
 endclass
